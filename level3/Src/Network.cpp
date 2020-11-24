@@ -30,9 +30,6 @@ bool Network::openConnect(User *user, QString key)
     if (!regs.contains(name))
         return false;
 
-    if (users.contains(name))
-        return false;
-
     if (key != regs[name])
         return false;
 
@@ -44,22 +41,26 @@ bool Network::openConnect(User *user, QString key)
     return true;
 }
 
-#include <QDebug>
 bool Network::sms(User *user, QString txt)
 {
-    qInfo() << user->name() << txt;
-    log(user->name() + ": " + txt);
+    QString userName = user->name();
+    log(userName + ": " + txt);
     if (txt == USERSLIST) {
         QString recTxt = regs.keys().join("; ");
         user->sms(recTxt);
         return true;
     }
-    QString userName = user->name();
     if (txt.startsWith(SUBSCRIBE ":")) {
         QString issuerName = txt.mid(strlen(SUBSCRIBE ":")).trimmed();
         if (issuerName == userName) return false;
-
         subscribers[issuerName] << userName;
+
+        return true;
+    }
+    if (txt.startsWith(CONNECTUSERSLIST)) {
+        user->sms(users.keys().join("; "));
+
+        return true;
     }
 
     if (txt.startsWith(TO)) {
@@ -69,6 +70,16 @@ bool Network::sms(User *user, QString txt)
 
             return sendUser(sendTo, txt);
         }
+    }
+
+    if (txt == "/?") {
+        user->sms("* \"/?\" - данная справка\n"
+                  "* \"subscribe: user2\" - подписатся на user2\n"
+                  "* \"to user2: txt\" - отправить сообщение пользователю user2\n"
+                  "* \"get connected users\" - список подключенных пользователей\n"
+                  "* \"get users list\" - список зарегистрированных пользователей\n");
+
+        return true;
     }
 
     QStringList set = subscribers[userName];

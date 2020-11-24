@@ -7,13 +7,13 @@
 class QmlNetwork : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString log1 READ getLog NOTIFY logChanged)
+    Q_PROPERTY(QString log1
+               READ getLog
+               NOTIFY logChanged)
 public:
     explicit QmlNetwork(QObject *parent = nullptr);
     void setServer(Network *newNetwork);
-    QString getLog() {
-        return _log;
-    }
+    QString getLog();
 
 private:
     Network* network;

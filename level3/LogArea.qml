@@ -25,7 +25,7 @@ Item {
         text: user.log
         wrapMode: Text.Wrap
         font.bold: true
-        font.pointSize: 24
+        font.pointSize: 16
 
 
     }

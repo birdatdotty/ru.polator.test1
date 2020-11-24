@@ -13,7 +13,9 @@ class QmlUser : public QObject
     Q_PROPERTY(QString status
                READ status
                NOTIFY statusChanged)
-    Q_PROPERTY(QString log READ log NOTIFY logChanged)
+    Q_PROPERTY(QString log
+               READ log
+               NOTIFY logChanged)
 
 public:
     explicit QmlUser(QString t = "", QObject *parent = nullptr);
