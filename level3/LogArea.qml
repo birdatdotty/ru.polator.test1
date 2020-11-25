@@ -12,42 +12,60 @@ Item {
     anchors.fill: parent
 
     Flickable {
-    id: flickable
-    property string text: ""
-    property bool readOnly: false
+        id: flickable
+        property string text: ""
+        property bool readOnly: false
 
-    anchors.fill: parent
-    TextArea.flickable:
-        TextArea {
-        id: ta
-        readOnly: flickable.readOnly
-        anchors.fill: parent
-        text: user.log
-        wrapMode: Text.Wrap
-        font.bold: true
-        font.pointSize: 16
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 40
 
+        TextArea.flickable: TextArea {
+            id: ta
+            readOnly: flickable.readOnly
 
+            Behavior on x { SmoothedAnimation { velocity: 200 } }
+            Behavior on y { SmoothedAnimation { velocity: 200 } }
+
+            Connections {
+                target: user
+                function onLogChanged() {
+                  flickable.contentY =
+                          ta.contentHeight < main.height - ti.height
+                          ? 0
+                          : ta.contentHeight - (main.height - ti.height) + ta.font.pointSize
+                }
+            }
+
+            anchors.fill: parent
+            text: user.log
+
+            wrapMode: Text.Wrap
+            font.bold: true
+            font.pointSize: 16
+        }
+        ScrollBar.vertical: ScrollBar { }
     }
-    ScrollBar.vertical: ScrollBar { }
-}
-    TextInput {
-        id: myInput
-        anchors.rightMargin: 0
-        anchors.leftMargin: 0
-        anchors.bottomMargin: 0
-        text: main.user.status
+    Rectangle {
+        id: ti
+        color: "#a0eba0"
+
+        height: 40
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        TextInput {
+            id: myInput
+            text: main.user.status
 
-//            EnterKeyAction.enabled: myInput.text.length > 0 || myInput.inputMethodComposing
-//            EnterKeyAction.label: "Next"
-        Keys.onReleased: {
-            if (event.key === Qt.Key_Return) {
-                main.user.enter(myInput.text)
+            anchors.fill: parent
+            Keys.onReleased: {
+                if (event.key === Qt.Key_Return) {
+                    main.user.enter(myInput.text)
+                }
             }
         }
     }
-
 }
